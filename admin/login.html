@@ -75,6 +75,7 @@
       $.ajax({
         url: 'http://localhost:8080/api/v1/admin/user/login',
         type: 'post',
+        
         data: {
           username: userName,
           password: passWord,
@@ -85,8 +86,11 @@
             $('.modal-body').text(res.msg);
             $('#myModal').modal();
             $('#myModal').on('hidden.bs.modal', function (e) {
-             location.href = './index.html'
+             location.href = './index.html';
             })
+          }else{
+            $('.modal-body').text(res.msg);
+            $('#myModal').modal();
           }
         }
       });
