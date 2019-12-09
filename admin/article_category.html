@@ -63,6 +63,7 @@
                 </div>
                 <div class="modal-body">
                     <form>
+                        <input type="hidden" id="id">
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">名称</label>
                             <input type="text" class="form-control" id="recipient-name">
@@ -84,20 +85,20 @@
 
 
 
-    <div class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal fade" tabindex="-1" role="dialog" id="suer">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                             aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Modal title</h4>
+                    <h4 class="modal-title">提示</h4>
                 </div>
                 <div class="modal-body">
-                    <p>One fine body&hellip;</p>
+                    <p>修改成功</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                    <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -175,19 +176,36 @@
                         if (res.code == 200) {
                             $('#recipient-name').val(res.data[0].name);
                             $('#message-text').val(res.data[0].slug);
+                            $('#id').val(res.data[0].id);
                         }
                     }
                 });
 
-                
-
-
-
             }
+            $('.btn-primary').on('click', function () {
 
+                let name = $('#recipient-name').val();
+                let slug = $('#message-text').val();
+                let id = $('#id').val();
+                $.ajax({
+                    url: window.BigNew.category_edit,
+                    type: 'post',
+                    data: {
+                        id: id,
+                        name: name,
+                        slug: slug,
+                    },
+                    success: function (res) {
+                        console.log(res);
+                        if (res.code == 200) {
+                            $('#exampleModal').modal('hide');
+                            getCategory_list();
+                            // $('#suer').modal();
+                        }
 
-
-
+                    }
+                });
+            });
 
 
         });
