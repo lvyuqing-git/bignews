@@ -54,32 +54,54 @@
 
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
                 <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">提示</h4>
                 </div>
                 <div class="modal-body">
-                  <form>
-                    <div class="form-group">
-                      <label for="recipient-name" class="control-label">Recipient:</label>
-                      <input type="text" class="form-control" id="recipient-name">
-                    </div>
-                    <div class="form-group">
-                      <label for="message-text" class="control-label">Message:</label>
-                      <textarea class="form-control" id="message-text"></textarea>
-                    </div>
-                  </form>
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">名称</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">slug</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  <button type="button" class="btn btn-primary">Send message</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">确认 </button>
                 </div>
-              </div>
             </div>
-          </div>
+        </div>
+    </div>
 
+
+
+
+    <div class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <p>One fine body&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
 </body>
 <script src="./libs/http.js"></script>
@@ -89,8 +111,8 @@
             <td>{{$value.name}}</td>
             <td>{{$value.slug}}</td>
             <td class="text-center">
-                <a href="javascript:void(0)" data-toggle="modal" class=" btn btn-info btn-xs" data-target="#exampleModal">编辑</a>
-                <a href="javascript:void(0)" class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:void(0)" data-id="{{$value.id}}" data-toggle="modal" class=" btn btn-info btn-xs" data-target="#exampleModal">编辑</a>
+                <a href="javascript:void(0)" data-id="{{$value.id}}" class="btn btn-danger btn-xs">删除</a>
             </td>
         </tr>
       {{/each }}                 
@@ -99,18 +121,76 @@
 </script>
 <script>
     $(function () {
+        getCategory_list();
+        function getCategory_list() {
+            $.ajax({
+                url: BigNew.category_list,
+                type: 'get',
+                success: function (res) {
+                    let html = template('temp', res);
 
-        $.ajax({
-            url: BigNew.category_list,
-            type: 'get',
-            success: function (res) {
-                let html = template('temp',res);
+                    $('tbody').append(html);
+
+                }
+            });
+        }
+
+
+        $('.modal').on('shown.bs.modal', function (e) {
+            let target = e.relatedTarget;
+            if (target == $('#xinzengfenlei')[0]) {
+                //点的是新添
+                let artival = $('#recipient-name').val();
+                let Message = $('#message-text').val();
+                $('#exampleModalLabel').text('新增分类');
+                $('.btn-primary').text('添加');
+                // $.ajax({
+                //     url: window.BigNew.category_add,
+                //     type: 'post',
+                //     data: {
+                //         name: artival,
+                //         slug: Message,
+                //     },
+                //     success: function (res) {
+                //         if (res == 201) {
+                //             $('.modal-title').val('添加成功');
+                //             $('.modal').modal();
+                //             getCategory_list();
+                //         }
+                //     }
+                // });
+
+            } else {
+                $('#exampleModalLabel').text('编辑分类');
+                $('.btn-primary').text('编辑');
+
+                let id = $(target).attr('data-id');
+                $.ajax({
+                    url: window.BigNew.category_search,
+                    type: 'get',
+                    data: {
+                        id: id,
+                    },
+                    success: function (res) {
+                        if (res.code == 200) {
+                            $('#recipient-name').val(res.data[0].name);
+                            $('#message-text').val(res.data[0].slug);
+                        }
+                    }
+                });
+
                 
-                $('tbody').append(html);
+
+
 
             }
-        });
 
+
+
+
+
+
+        });
 
     });
 
