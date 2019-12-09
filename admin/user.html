@@ -24,7 +24,7 @@
                 <div class="form-group">
                     <label for="inputEmail1" class="col-sm-2 control-label">用户名称：</label>
                     <div class="col-sm-4">
-                        <input type="text" name="username" class="form-control username" id="inputEmail1" value="李思思">
+                        <input type="text" name="username" class="form-control username" id="inputEmail1" value="李想想">
                     </div>
                 </div>
                 <div class="form-group">
@@ -43,13 +43,16 @@
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
-                        <img src="images/2.jpg" alt="" class="user_pic">
-                        <input style="display: block" name="userPic" type="file" id="exampleInputFile">
+                        <label for="exampleInputFile">
+                            <img src="images/2.jpg" alt="" class="user_pic">
+                        </label>
+
+                        <input style="display: none;" name="userPic" type="file" id="exampleInputFile">
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
-                        <label for="exampleInputFile">
+                        <!-- <label for="exampleInputFile">
                             <img src="./images/uploads_icon.jpg" style="height: 50px;" alt="">
-                        </label>
+                        </label> -->
                     </div>
                 </div>
 
@@ -68,6 +71,89 @@
             </form>
         </div>
     </div>
+
+
+    <div class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">提示</h4>
+                </div>
+                <div class="modal-body">
+                  <p>确认修改？&hellip;</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                  <button type="button" class="btn btn-primary">确定</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+
+
+
+
 </body>
+<script src="./libs/http.js"></script>
+<script>
+    $(function () {
+
+        $.ajax({
+            url: window.BigNew.user_detail,
+            type: 'get',
+            success: function (res) {
+                for (let key in res.data) {
+                    $('.' + key).val(res.data[key]);
+                }
+                $('.user_pic').attr('src', res.data.userPic);
+            }
+        });
+        $('#exampleInputFile').on('change', function () {
+
+            let file = this.files[0];
+            let url = URL.createObjectURL(file);
+            $('.user_pic').attr('src', url);
+
+        });
+
+
+        $('.btn-success').on('click', function (e) {
+            e.preventDefault();
+
+            let data = new FormData($('#form')[0]);
+            $.ajax({
+                url: BigNew.user_edit,
+                type: 'post',
+                processData: false,
+                contentType: false,
+                data: data,
+                success: function (res) {
+                    if (res.code == 200) {
+                        // window.parent.location.reload();
+
+                        $.ajax({
+                            url: BigNew.user_info,
+                            type: 'get',
+                            success: function (res) {
+                                if (res.code == 200) {
+
+                                    window.parent.$('.user_info img,.user_center_link img').attr('src', res.data.userPic);
+                                    window.parent.$('.user_info span').html('欢迎  ' + res.data.nickname);
+                                }
+                            }
+                        });
+
+
+                    }
+                }
+            });
+
+        });
+
+
+    });
+
+</script>
 
 </html>
