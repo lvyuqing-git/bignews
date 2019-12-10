@@ -121,7 +121,7 @@
 
 
         let perpage = 10;
-        let page = 1;
+        let mypage = 1;
 
         function getData(page, callback) {
             $.ajax({
@@ -144,7 +144,7 @@
             });
         }
 
-        getData(page, function (res) {
+        getData(mypage, function (res) {
             $('#pagination-demo').twbsPagination({
                 totalPages: res.data.totalPage,
                 visiblePages: 7,
@@ -161,9 +161,11 @@
 
         $('#btnSearch').on('click', function (e) {
             e.preventDefault();
-            getData(page, function (res) {
-                $('#pagination-demo').twbsPagination('changeTotalPages', res.data.totalPage, 1)
+            getData(mypage, function (res) {
+                console.log(mypage);
 
+                $('#pagination-demo').twbsPagination('changeTotalPages', res.data.totalPage, 1)
+                console.log(mypage);
             });
 
         });
@@ -172,19 +174,21 @@
 
             let artId = $(this).attr('data-id');
 
-            $.ajax({
-                url: window.BigNew.article_delete,
-                type: 'post',
-                data: {
-                    id: artId,
-                },
-                success: function (res) {
-                    getData(page, function (res) {
-                        $('#pagination-demo').twbsPagination('changeTotalPages', res.data.totalPage, 1)
+            if (confirm('确认删除?')) {
+                $.ajax({
+                    url: window.BigNew.article_delete,
+                    type: 'post',
+                    data: {
+                        id: artId,
+                    },
+                    success: function (res) {
+                        getData(mypage, function (res) {
+                            $('#pagination-demo').twbsPagination('changeTotalPages', res.data.totalPage, 1)
 
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
         });
     });
 
