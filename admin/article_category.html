@@ -84,7 +84,6 @@
 
 
 
-
     <div class="modal fade" tabindex="-1" role="dialog" id="suer">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -106,6 +105,7 @@
 
 </body>
 <script src="./libs/http.js"></script>
+
 <script id="temp" type="text/html">
       {{each data}}   
       <tr>
@@ -130,7 +130,7 @@
                 success: function (res) {
                     let html = template('temp', res);
 
-                    $('tbody').append(html);
+                    $('tbody').html(html);
 
                 }
             });
@@ -145,21 +145,7 @@
                 let Message = $('#message-text').val();
                 $('#exampleModalLabel').text('新增分类');
                 $('.btn-primary').text('添加');
-                // $.ajax({
-                //     url: window.BigNew.category_add,
-                //     type: 'post',
-                //     data: {
-                //         name: artival,
-                //         slug: Message,
-                //     },
-                //     success: function (res) {
-                //         if (res == 201) {
-                //             $('.modal-title').val('添加成功');
-                //             $('.modal').modal();
-                //             getCategory_list();
-                //         }
-                //     }
-                // });
+
 
             } else {
                 $('#exampleModalLabel').text('编辑分类');
@@ -182,11 +168,18 @@
                 });
 
             }
-            $('.btn-primary').on('click', function () {
 
-                let name = $('#recipient-name').val();
-                let slug = $('#message-text').val();
-                let id = $('#id').val();
+
+
+        });
+        $('.btn-primary').on('click', function () {
+
+            let name = $('#recipient-name').val();
+            let slug = $('#message-text').val();
+            let id = $('#id').val();
+            //编辑类别
+            $('form')[0].reset();
+            if ($(this).text() == '编辑') {
                 $.ajax({
                     url: window.BigNew.category_edit,
                     type: 'post',
@@ -196,20 +189,43 @@
                         slug: slug,
                     },
                     success: function (res) {
-                        console.log(res);
                         if (res.code == 200) {
                             $('#exampleModal').modal('hide');
-                            getCategory_list();
+                            getCategory_list(); 
                             // $('#suer').modal();
                         }
 
                     }
                 });
-            });
+            } else {
 
+                $.ajax({
+                    url: window.BigNew.category_add,
+                    type: 'post',
+                    data: {
+                        name: name,
+                        slug: slug,
+                    },
+                    success: function (res) {
+                        if (res.code == 201) {
+                            $('#exampleModal').modal('hide');
+                            getCategory_list();
+                            // $('#suer').modal();
+
+                        }
+
+                    }
+                });
+
+            }
 
         });
 
+        $('.btn-default').on('click',function(){
+            $('form')[0].reset();
+
+        });
+       
     });
 
 </script>

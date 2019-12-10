@@ -13,6 +13,8 @@
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
+    <script src="./libs/jquery.twbsPagination.js"></script>
+
 </head>
 
 <body>
@@ -72,6 +74,122 @@
             </div>
         </div>
     </div>
+    <ul id="pagination-demo" class="pagination-sm"></ul>
+
 </body>
+<script src="./libs/http.js"></script>
+<script type="text/html" id="tp">
+        <option value="">所有分类</option>
+
+        {{each data}}
+       
+        <option value={{$value.id}}>{{$value.name}}</option>
+
+        {{/each}}              
+
+    </script>
+
+<script type="text/html" id="main_tp">
+
+        {{each data}}
+        <tr>
+                <td>{{$value.title}}</td>
+                <td>{{$value.author}}</td>
+                <td>{{$value.category}}</td>
+                <td class="text-center">{{$value.date}}</td>
+                <td class="text-center">{{$value.state}}</td>
+                <td class="text-center">
+                    <a href="article_edit.html" class="btn btn-default btn-xs" data-id='{{$value.id}}'>编辑</a>
+                    <a href="javascript:void(0);" class="btn btn-danger btn-xs delete" data-id='{{$value.id}}'>删除</a>
+                </td>
+            </tr>
+
+        {{/each}}
+
+    </script>
+
+<script>
+    $(function () {
+
+        $.ajax({
+            url: window.BigNew.category_list,
+            type: 'get',
+            success: function (res) {
+                $('#selCategory').html(template('tp', res));
+            }
+        });
+
+
+        let perpage = 10;
+        let page = 1;
+
+        function getData(page, callback) {
+            $.ajax({
+                url: window.BigNew.article_query,
+                type: 'get',
+                data: {
+                    type: $('#selCategory').val(),
+                    state: $('#selStatus').val(),
+                    //每页显示总数
+                    perpage: perpage,
+                    //当前页
+                    page: page,
+                },
+                success: function (res) {
+                    $('tbody').html(template('main_tp', res.data));
+                    if (callback != null) {
+                        callback(res);
+                    }
+                }
+            });
+        }
+
+        getData(page, function (res) {
+            $('#pagination-demo').twbsPagination({
+                totalPages: res.data.totalPage,
+                visiblePages: 7,
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '尾页',
+                onPageClick: function (event, page) {
+                    page = page;
+                    getData(page, null);
+                }
+            });
+        });
+
+        $('#btnSearch').on('click', function (e) {
+            e.preventDefault();
+            getData(page, function (res) {
+                $('#pagination-demo').twbsPagination('changeTotalPages', res.data.totalPage, 1)
+
+            });
+
+        });
+
+        $('tbody').on('click', '.delete', function () {
+
+            let artId = $(this).attr('data-id');
+
+            $.ajax({
+                url: window.BigNew.article_delete,
+                type: 'post',
+                data: {
+                    id: artId,
+                },
+                success: function (res) {
+                    getData(page, function (res) {
+                        $('#pagination-demo').twbsPagination('changeTotalPages', res.data.totalPage, 1)
+
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+
+
 
 </html>
