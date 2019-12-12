@@ -211,4 +211,140 @@
 
 </body>
 
+<!-- 排行 -->
+<script type="text/html" id="paiHan">
+
+        {{each data}}
+        {{if $index == 0}}
+        <li><span class="first">1</span><a href="article.html?id={{$value.id}}">{{$value.title}}</a></li>
+ 
+        {{else if $index == 1}}
+        <li><span class="second">2</span><a href="article.html?id={{$value.id}}">{{$value.title}}</a></li>
+ 
+        {{else if $index == 2}}
+        <li>
+            <span class="third">3</span><a href="article.html?id={{$value.id}}">{{$value.title}}</a>
+         </li>            
+        {{else}}
+        <li><span>{{$index}}</span><a href="article.html?id={{$value.id}}">{{$value.title}}</a></li>
+ 
+        {{/if}}
+ 
+        {{/each}}
+ 
+ </script>
+
+<!-- 评论 -->
+<script type="text/html" id="pinLun">
+      {{each data}}
+          <li>
+                 <span>{{ $value.author.substr(0,1) }}</span>
+                 <b><em>{{ $value.author }}</em> {{ $value.date }}说:</b>
+                 <strong>{{ $value.intro }}</strong>
+         </li>
+         {{/each }}
+ 
+ 
+ </script>
+<!-- 焦点 -->
+<script type="text/html" id="jiaoDian">
+     {{each data}}
+ 
+     <li><a href="article.html?id={{$value.id}}">{{$value.intro}}</a></li>
+ 
+     {{/each}}
+ 
+ </script>
+
+<script type="text/html" id="xiangQing">
+
+    <!-- <div class="left_con setfr"> -->
+            <div class="breadcrumb">
+                当前位置： <a href="#">首页</a> &gt; <a href="#">科技</a> &gt; 文章详情
+            </div>
+            <h3 class="article_title">{{data.title}}</h3>
+            <div class="article_info">{{data.author}} 发布于 {{data.date}} 07:08:46&nbsp;&nbsp;&nbsp;分类: {{data.category}}&nbsp;&nbsp;&nbsp;阅读:
+                ({{data.read}})&nbsp;&nbsp;&nbsp;评论: ({{data.comments}})</div>
+            <div class="article_con">
+                    {{data.content}}
+            </div>
+            <div class="article_links">
+                上一篇： <a href="article.html?id={{data.prev.id}}">{{data.prev.title}}</a><br>
+                {{if data.next !== null}}
+                下一篇： <a href="article.html?id={{data.next.id}}">{{data.next.title}}</a>
+                {{else}}
+                下一篇： <a href="javascript:value(0)">没有下一篇了</a>
+
+                {{/if}}
+            </div>
+
+           
+            </div>
+        <!-- </div> -->
+
+</script>
+
+
+<script>
+
+    $(function () {
+
+        //文章热门排行
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/index/rank',
+            type: 'get',
+            success: function (res) {
+
+                $('.content_list').html(template('paiHan', res));
+            }
+
+        });
+
+        //评论
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/index/latest_comment',
+            type: 'get',
+            success: function (res) {
+                $('.comment_list').html(template('pinLun', res));
+            }
+
+        });
+
+        //焦点关注
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/index/attention ',
+            type: 'get',
+            success: function (res) {
+                $('.guanzhu_list').html(template('jiaoDian', res));
+            }
+
+        });
+
+        //文章详细内容
+
+            
+            $.ajax({
+                url : 'http://localhost:8080/api/v1/index/article',
+                type : 'get',
+                data : {
+                    id : location.search.substr(4)
+                },
+                success : function(res){
+                    console.log(res);
+
+                    $('.setfr').html(template('xiangQing',res));
+
+                    
+                }
+            });
+
+
+
+    });
+
+
+</script>
+
+</body>
+
 </html>
